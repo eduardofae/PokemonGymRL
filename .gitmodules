@@ -1,0 +1,3 @@
+[submodule "Pokemon Gymnasium"]
+	path = Pokemon Gymnasium
+	url = https://github.com/eduardofae/poke-gym.git
