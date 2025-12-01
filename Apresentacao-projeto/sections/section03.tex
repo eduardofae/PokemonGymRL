@@ -1,23 +1,28 @@
-\section{RL em Jogos} % Seções são adicionadas para organizar sua apresentação em blocos discretos, todas as seções e subseções são automaticamente exibidas no índice como uma visão geral da apresentação, mas NÃO são exibidas como slides separados.
+\section{Metodologia} % Seções são adicionadas para organizar sua apresentação em blocos discretos, todas as seções e subseções são automaticamente exibidas no índice como uma visão geral da apresentação, mas NÃO são exibidas como slides separados.
 
 %----------------------------------------------------------------------------------------
-
-\begin{frame}
-    \frametitle{Desafios}
-    \begin{itemize}
-        \item <1-> Conhecimento do domínio % Eu conheço as regras do jogo? Eu sei como agir dependendo da situação em que me encontro?
-        \item <2-> Simplificação do problema % Talvez há uma necessidade de simplificar, pelo menos em primeira instância, o jogo que está sendo modelado.
-        \item <3-> Custo computacional
-    \end{itemize}
+\begin{frame} 
+    \frametitle{Tipos Duplos}
+    \centering
+    \includegraphics[width=0.7\linewidth]{img/types.png}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
 \begin{frame} 
-    \frametitle{Oportunidades}
+    \frametitle{Nova configuração}
     \begin{itemize}
-        \item <1-> Prova de conceito % É possível resolver o problema X utilizando o ambiente de um jogo, quais áreas serão afetadas agora, sabendo que podemos concluir o problema X com sucesso?
-        \item <2-> Paralelo real x virtual % Jogos fornecem um ambiente seguro e controlado para testar algoritmos de RL antes de aplicá-los em cenários do mundo real.
-        \item <3-> Simulações do mundo real % Jogos podem ser usados para criar simulações do mundo real, permitindo que os agentes de RL treinem em ambientes mais complexos e variados, tentando se preparar ao máximo na simulação para encontrar um ambiente mais complexo na realidade, como na robótica.
+        \item <1-> META Aware
+        \item <2-> Own Type Moves + Coverage Moves
+        \item <3-> Ordem aleatória dos movimentos
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Adaptação de Agentes}
+    \begin{itemize}
+        \item <1-> Código original de 2020
+        \item <2-> Atualização e \it{fixes} para funcionamento retrocompatível
     \end{itemize}
 \end{frame}
 
