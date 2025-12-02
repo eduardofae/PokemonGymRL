@@ -4,8 +4,8 @@
 \begin{frame}
     \frametitle{Experimentos Realizados}
     \begin{itemize}
-        \item <1-> Treinamento de modelo usando a configuração nova
-        \item <2-> Teste contra humanos
+        \item <1-> Treino de modelos usando a configuração do ambiente nova
+        \item <2-> Testes entre os agentes
     \end{itemize}
 \end{frame}
 
@@ -13,9 +13,46 @@
 \begin{frame}
     \frametitle{Resultados Obtidos}
     \centering
-    \begin{itemize}
-        \item <1> \includegraphics[width=0.7\textwidth]{img/paper.png}
-    \end{itemize}
+    % 1-3 -> ppo ganhou todos determinísticos como p1
+    \only <1> {
+        \includegraphics[width=0.8\linewidth]{img/ppoxa2c.png}
+    }
+    \only <2> {
+        \includegraphics[width=0.8\linewidth]{img/ppoxdqn.png}
+    }
+    \only<3> {
+        \includegraphics[width=0.8\linewidth]{img/ppoxrppofull.png}
+    }
+    % 4-6 -> dqn ganhou todos determinísticos como p1
+    \only<4> {
+        \includegraphics[width=0.8\linewidth]{img/dqnxppo.png}
+    }
+    \only<5> {
+        \includegraphics[width=0.8\linewidth]{img/dqnxa2c.png}
+    }
+    \only<6> {
+        \includegraphics[width=0.8\linewidth]{img/dqnxrppofull.png}
+    }
+    % 7-9 -> rppo ganhou todos meta aware como p1
+    \only<7> {
+        \includegraphics[width=0.8\linewidth]{img/rppoxppo.png}
+    }
+    \only<8> {
+        \includegraphics[width=0.8\linewidth]{img/rppoxa2c.png}
+    }
+    \only<9> {
+        \includegraphics[width=0.8\linewidth]{img/rppoxdqn.png}
+    }
+    % 10-12 -> rppo ganhou todos meta aware como p2
+    \only<10> {
+        \includegraphics[width=0.8\linewidth]{img/ppoxrppo.png}
+    }
+    \only<11> {
+        \includegraphics[width=0.8\linewidth]{img/a2cxrppo.png}
+    }
+    \only<12> {
+        \includegraphics[width=0.8\linewidth]{img/dqnxrppo.png}
+    }
 \end{frame}
 
 %----------------------------------------------------------------------------------------
