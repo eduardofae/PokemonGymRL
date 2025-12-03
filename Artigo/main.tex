@@ -2,7 +2,6 @@
 
 
 \usepackage{PRIMEarxiv}
-
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -13,16 +12,12 @@
 \usepackage{microtype}      % microtypography
 \usepackage{lipsum}
 \usepackage{graphicx}
+\usepackage[round,authoryear]{natbib}
 \graphicspath{{media/}}     % organize your images and other figures under media/ folder
 
   
 %% Title
-\title{Simulador de Batalhas Pokemon
-%%%% Cite as
-%%%% Update your official citation here when published 
-\thanks{\textit{\underline{Citation}}: 
-\textbf{Authors. Title. Pages.... DOI:000000/11111.}} 
-}
+\title{Simulador de Batalhas Pokemon}
 
 \author{
   Eduardo Dalmás Faé, João Pedro Kuhn Braun \\
@@ -53,23 +48,29 @@ a
 
 \section{Conceitos Básicos}
 
-Pokemon é uma franquia da Nintendo que começou como um jogo no ano de
+Pokemon é uma franquia da Nintendo que começou como um jogo no ano de 1996, que com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de uma história até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas \textit{core} que traz vida ao jogo são as batalhas Pokemon.
+
+Pokemons são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses pokemons os capturam e usam para batalhar entre si, dinâmica essa importantíssima e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem tipos, quatro movimentos, cada um possuindo tipos e poderes, atributos que ditam a sua "qualidade", etc. A batalha ocorre em turnos em que, simultaneamente, cada treinador pokemon decide se deseja trocar o pokemon atual para outro de sua equipe, se possível, ou atacar com um de seus 4 movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos pokemons atacarem, executa sua ação primeiro quem é o mais veloz.
+
 
 
 
 \section{Trabalhos Relacionados}
 
+\textbf{Batalha Pokemon} Trabalhos anteriores já modelaram ambientes de batalha pokemon para treino e teste de agentes. \citet{poke-battle} definiram um ambiente simplificado de pokemon para iniciar seus experimentos, reduzindo enormemente a complexidade do jogo para tal. Para o treino de seus agentes, foram utilizados dois algoritmos, WPL (\textit{Weighted Policy Learner}) \cite{wpl} e GIGAWoLF (\textit{Generalized Infinitesimal Gradient Ascent Win or Learn Fast}) \cite{gigawolf} em cima de uma configuração de times pokemons semi-aleatória, para então serem testados em um ambiente determinístico criado pelos próprios autores, para descobrir se os agentes aprenderam a executar uma ação ruim a curto prazo, trocar de pokemon, para uma possível vitória num horizonte mais distante. O presente trabalho utilizou de um ambiente mais complexo, além de definir mais agentes, com diferentes algoritmos para seus treinamentos.
+
+\textbf{Padronização de Batalhas} Houveram tentativas de padronizar o cenário geral de batalha e modelação de um ambiente pokemon, além de permitir a integração de agentes treinados com simuladores de batalhas pokemon grandemente utilizados hoje em dia, como \href{https://pokemonshowdown.com/}{Pokemon Showdown}. Entretanto, trabalhos como os de \cite{poke-env} falham hoje em executar esse proposta com êxito, visto alguns problemas de uso e falta de documentação adequada. Esta pesquisa não integra o agente treinado com simuladores para interação e teste com outros jogadores, porém traz uma padronização não só de um ambiente de batalha pokemon através do uso do \href{https://pettingzoo.farama.org/}{PettingZoo} \cite{pettingzoo}, mas também traz padronização no treino e uso de agentes.
+
+
+\section{Metodologia}
+
 a
 
 
 
-\section{Metodologia}
-Your conclusion here
-
-
-
 \section{Resultados e Discussão}
-This was was supported in part by......
+
+a
 
 
 
@@ -80,7 +81,7 @@ a
 
 
 %Bibliography
-\bibliographystyle{unsrt}  
+\bibliographystyle{plainnat}
 \bibliography{references}  
 
 

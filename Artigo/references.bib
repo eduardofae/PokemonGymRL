@@ -1,24 +1,60 @@
-@inproceedings{kour2014real,
-  title={Real-time segmentation of on-line handwritten arabic script},
-  author={Kour, George and Saabne, Raid},
-  booktitle={Frontiers in Handwriting Recognition (ICFHR), 2014 14th International Conference on},
-  pages={417--422},
-  year={2014},
-  organization={IEEE}
+@misc{poke-env,
+    author       = {Haris Sahovic},
+    title        = {Poke-env: pokemon AI in python},
+    url          = {https://github.com/hsahovic/poke-env}
 }
 
-@inproceedings{kour2014fast,
-  title={Fast classification of handwritten on-line Arabic characters},
-  author={Kour, George and Saabne, Raid},
-  booktitle={Soft Computing and Pattern Recognition (SoCPaR), 2014 6th International Conference of},
-  pages={312--318},
-  year={2014},
-  organization={IEEE}
+@article{wpl,
+   abstract = {Several multiagent reinforcement learning (MARL) algorithms have been proposed to optimize agents decisions. Due to the complexity of the problem, the majority of the previously developed MARL algorithms assumed agents either had some knowledge of the underlying game (such as Nash equilibria) and/or observed other agents actions and the rewards they received. We introduce a new MARL algorithm called the Weighted Policy Learner (WPL), which allows agents to reach a Nash Equilibrium (NE) in benchmark 2-player-2-action games with minimum knowledge. Using WPL, the only feedback an agent needs is its own local reward (the agent does not observe other agents actions or rewards). Furthermore, WPL does not assume that agents know the underlying game or the corresponding Nash Equilibrium a priori. We experimentally show that our algorithm converges in benchmark two-player-two-action games. We also show that our algorithm converges in the challenging Shapleys game where previous MARL algorithms failed to converge without knowing the underlying game or the NE. Furthermore, we show that WPL outperforms the state-of-the-art algorithms in a more realistic setting of 100 agents interacting and learning concurrently. An important aspect of understanding the behavior of a MARL algorithm is analyzing the dynamics of the algorithm: how the policies of multiple learning agents evolve over time as agents interact with one another. Such an analysis not only verifies whether agents using a given MARL algorithm will eventually converge, but also reveals the behavior of the MARL algorithm prior to convergence. We analyze our algorithm in two-player-two-action games and show that symbolically proving WPLs convergence is difficult, because of the non-linear nature of WPLs dynamics, unlike previous MARL algorithms that had either linear or piece-wise-linear dynamics. Instead, we numerically solve WPLs dynamics differential equations and compare the solution to the dynamics of previous MARL algorithms.},
+   author = {Sherief Abdallah and Victor Lesser},
+   doi = {10.1613/jair.2628},
+   journal = {Journal Of Artificial Intelligence Research},
+   month = {1},
+   pages = {521-549},
+   publisher = {AI Access Foundation},
+   title = {A Multiagent Reinforcement Learning Algorithm with Non-linear Dynamics},
+   volume = {33},
+   url = {http://arxiv.org/abs/1401.3454 http://dx.doi.org/10.1613/jair.2628},
+   year = {2014}
+}
+@article{gigawolf,
+   abstract = {Learning in a multiagent system is a challenging problem due to two key factors. First, if other agents are simultaneously learning then the environment is no longer stationary, thus undermining convergence guarantees. Second, learning is often susceptible to deception, where the other agents may be able to exploit a learner's particular dynamics. In the worst case, this could result in poorer performance than if the agent was not learning at all. These challenges are identifiable in the two most common evaluation criteria for multiagent learning algorithms: convergence and regret. Algorithms focusing on convergence or regret in isolation are numerous. In this paper, we seek to address both criteria in a single algorithm by introducing GIGA-WoLF, a learning algorithm for normal-form games. We prove the algorithm guarantees at most zero average regret, while demonstrating the algorithm converges in many situations of self-play. We prove convergence in a limited setting and give empirical results in a wider variety of situations. These results also suggest a third new learning criterion combining convergence and regret, which we call negative non-convergence regret (NNR).},
+   author = {Michael Bowling},
+   journal = {Advances in Neural Information Processing Systems},
+   title = {Convergence and No-Regret in Multiagent Learning},
+   volume = {17},
+   year = {2004}
+}
+@article{vgc-ai,
+   abstract = {This work presents a framework for a new type of meta-game balance AI Competition based on Pokémon, Pokémon battles can be viewed as adversarial games played by AIs. Around these games, there is also a meta-game: which Pokémon to include in a team for battles, which moves to pick for every Pokémon in the team, etc. This meta-game is itself a game with a set of rules that govern which Pokémon and which moves are available in the roster that can be selected from, or which attributes (health points, damage, etc.) a Pokémon or moves should have. The aim of the framework is to facilitate competitions in creating the most balanced meta-game possible; one where there is a large variety of Pokémon and moves to choose from, and many possible combinations that are effective. AI agents could assist human designers in achieving strategically expressive meta-games, and this type of benchmark could incentivize game designers and researchers alike to advance knowledge on this type of domain.},
+   author = {Simao Reis and Luis Paulo Reis and Nuno Lau},
+   doi = {10.1109/COG52621.2021.9618985},
+   isbn = {9781665438865},
+   issn = {23254289},
+   journal = {IEEE Conference on Computatonal Intelligence and Games, CIG},
+   keywords = {AI Competition,Automatic Game Design,Competitive Games,Multi-Agent Systems,Multi-Task Learning},
+   publisher = {IEEE Computer Society},
+   title = {VGC AI Competition - A New Model of Meta-Game Balance AI Competition},
+   volume = {2021-August},
+   year = {2021}
+}
+@article{poke-battle,
+   abstract = {Pokémon is one of the most popular video games in the world, and recent interest has appeared in Pokémon battling as a testbed for AI challenges. This is due to Pokémon battling showing interesting properties which contrast with current AI challenges over other video games. To this end, we implement a Pokémon Battle Environment, which preserves many of the core elements of Pokémon battling, and allows researchers to test isolated learning objectives. Our approach focuses on type advantage in Pokémon battles and on the advantages of delayed rewards through switching, which is considered core strategies for any Pokémon battle. As a competitive multi-agent environment, it has a partially-observable, high-dimensional, and continuous state-space, adheres to the Gym de facto standard reinforcement learning interface, and is performance-oriented, achieving thousands of interactions per second in commodity hardware. We determine whether deep competitive reinforcement learning algorithms, WPLθ and GIGAθ, can learn successful policies in this environment. Both converge to rational and effective strategies, and GIGAθ shows faster convergence, obtaining a 100% win-rate in a disadvantageous test scenario.},
+   author = {David Simões and Simão Reis and Nuno Lau and Luís Paulo Reis},
+   isbn = {9781728170787},
+   journal = {2020 IEEE International Conference on Autonomous Robot Systems and Competitions (ICARSC)},
+   keywords = {Com-petitive Games,Index Terms-Deep Learning,Multi-Agent Systems,Reinforcement Learning},
+   month = {4},
+   title = {Competitive Deep Reinforcement Learning over a Pokémon Battling Simulator},
+   year = {2020}
 }
 
-@article{hadash2018estimate,
-  title={Estimate and Replace: A Novel Approach to Integrating Deep Neural Networks with Existing Applications},
-  author={Hadash, Guy and Kermany, Einat and Carmeli, Boaz and Lavi, Ofer and Kour, George and Jacovi, Alon},
-  journal={arXiv preprint arXiv:1804.09028},
-  year={2018}
+@article{pettingzoo,
+  title={Pettingzoo: Gym for multi-agent reinforcement learning},
+  author={Terry, J and Black, Benjamin and Grammel, Nathaniel and Jayakumar, Mario and Hari, Ananth and Sullivan, Ryan and Santos, Luis S and Dieffendahl, Clemens and Horsch, Caroline and Perez-Vicente, Rodrigo and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={15032--15043},
+  year={2021}
 }
+
