@@ -33,28 +33,34 @@
 
 
 \begin{abstract}
-\lipsum[1]
+Esta pesquisa aborda uma simulação simplificada de batalhas pokemons
 \end{abstract}
 
 % keywords can be removed
-\keywords{First keyword \and Second keyword \and More}
+\keywords{a \and b \and c}
 
 
 \section{Introduction}
 
 Máquinas podem pensar \cite{machinesthink}? Alan Turing se fez essa pergunta em 1950, e desde então muitos cientistas se propuseram a pesquisar e dedicar as suas vidas para esse tema e suas variações. Em 1959, cunhou-se o termo \textit{machine learning} (aprendizado de máquina) devido à pesquisa de \citet{machinelearning}, na qual um agente foi treinado para jogar damas, um dos primeiros passos da época na direção de computadores se tornarem capazes de resolver/jogar jogos desenvolvidos por humanos.
 
-Desde então, muita pesquisa foi realizada na área. Entre muitos marcos de trabalhos nesse campo de conhecimento, 
+Desde então, muita pesquisa foi realizada na área de aprendizado de máquina e aprendizado por reforço. Entre muitos marcos nesses campos de conhecimento, podemos citar Deep Blue \cite{deepblue}, IA que foi capaz de vencer o campeão de xadrez mundial da época, Garry Kasparov. Mais tarde, AlphaGo \cite{alphago} e AlphaZero \cite{alphazero} vieram para derrotar o campeão mundial de Go, Lee Sedol, e propor uma técnica para treinar um agente para jogar com desempenho superhumano diversos jogos de tabuleiro, sem necessidade de aprendizado supervisionado ou anotações de especialistas para aprender boas jogadas, respectivamente.
+
+Indo além de jogos que podem ser representados por um domínio discreto, também houveram grandes contribuições, como DQN para jogar Atari \cite{atarinew}, AlphaStar \cite{alphastar} e OpenAI-5 \cite{openai5}. DQN (\textit{Deep-Q Network}) é muito semelhante a \textit{Q-learning} tabular, porém no lugar da tabela de transições para cada par de ação e estado, uma rede neural se torna a responsável por aprender essa representação e, a partir de um estado, decidir a ação que deve ser tomada. Ela foi utilizada pela primeira vez para jogar diversos jogos do Atari, em 2013, resultando em uma publicação mais elaborada em 2015. AlphaStar e OpenAI-5 também tratam de jogos representados por um domínio contínuo, sendo o primeiro responsável por alcançar domínio altamente competitivo em StarCraft II e o segundo por vencer dos campões mundiais do mundial de Dota 2 no ano de 2019.
+
+Sabemos que as aplicações de aprendizado por reforço estão distantes de estarem restritas a jogos. É importantíssimo salientar que muito dessa pesquisa exposta demonstra uma prova de conceito, até onde vai o nosso alcance, o tamanho de nosso horizonte. Após descobrirmos o que é possível no universo de jogos e simulações, abstraímos esse conhecimento e o aplicamos em diversas áreas como a robótica, a qual se beneficia muito de treinos de agentes em simulações para futura aplicação no mundo real, o treinamento de grandes modelos de linguagem \cite{hfrl}, em que através do \textit{feedback} humano é possível melhorar a qualidade das respostas desses modelos através de apredizado por reforço, entre muitas outras.
+
+Dessa forma, enxergamos a simulação de batalhas entre pokemons como uma oportunidade de provar um conceito. Esse jogo tem características únicas que o fazem ser um tópico interessante de ser pesquisado. O combate em turnos não é trivial, pois a ação dos dois jogadores ocorre simultaneamente, o jogo tem muitas características a serem levadas em conta, então tem um grande espaço de estados, e está sempre em constante desenvolvimento, tornando-se desafiador de sua modelagem estar atualizada. Não somente a comunidade científica se beneficia da exploração desse domínio, como também a sua grande comunidade, que tem interesse nesses assuntos.
 
 
 
 \section{Conceitos Básicos}
 
-Pokemon é uma franquia da Nintendo que começou como um jogo no ano de 1996, que com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de uma história até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas \textit{core} que traz vida ao jogo são as batalhas Pokemon.
+Pokemon é uma franquia da Nintendo que começou como um jogo no ano de 1996, que com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de uma história até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas centrais que traz vida ao jogo são as batalhas entre pokemons.
 
-Pokemons são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses pokemons os capturam e usam para batalhar entre si, dinâmica essa importantíssima e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem tipos, quatro movimentos, cada um possuindo tipos e poderes, atributos que ditam a sua "qualidade", etc. A batalha ocorre em turnos em que, simultaneamente, cada treinador pokemon decide se deseja trocar o pokemon atual para outro de sua equipe, se possível, ou atacar com um de seus 4 movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos pokemons atacarem, executa sua ação primeiro quem é o mais veloz.
+Pokemons são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses pokemons os capturam e usam para batalhar entre si, dinâmica essa importantíssima e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem tipos, quatro movimentos, cada um possuindo tipos e poderes, atributos que ditam a sua "qualidade", etc. A batalha ocorre em turnos em que, simultaneamente, cada treinador pokemon decide se deseja trocar o pokemon atual para outro de sua equipe, se possível, ou atacar com um de seus 4 movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos pokemons atacarem, executa sua ação primeiro o mais veloz.
 
-Seus tipos são importantes de serem levados em consideração também no contexto da batalha. Existem 18 tipos no mundo pokemon, cada um deles possuindo características em relação aos outros, como duplicar, cortar pela metade ou anular o dano causado pelo ataque de um oponente. Além disso, quando um pokemon ataca utilizando um movimento categorizado como seu próprio tipo, o poder deste golpe é multiplicado por um fator de 50\%, dinâmica importante para o combate.
+Seus tipos são importantes de serem levados em consideração também no contexto da batalha. Existem 18 tipos no mundo pokemon, cada um deles possuindo características positivas ou negativas em relação aos outros, como duplicar, cortar pela metade ou anular o dano causado pelo ataque de um oponente. Além disso, quando um pokemon ataca utilizando um movimento categorizado com seu próprio tipo, o poder deste golpe é multiplicado por um fator de 50\%, dinâmica relevante para o combate.
 
 
 
@@ -256,7 +262,11 @@ Diferente dos melhores agentes observados na Tabela \ref{tab:old_meta_game_aware
 
 \section{Conclusão}
 
+Após todo o exposto nesta pesquisa, percebemos que uma engenharia de recompensa parece fazer-se necessária. Uma função de recompensa simples demais falha em capturar toda a nuância de uma batalha pokemon, mesmo que em um cenário simplificado comparado ao jogo original. No entanto, tal função deve ser pensada com cuidado para não dar oportunidade do agente divergir para um comportamento incorreto durante o seu treinamento, ou ficar preso em pensamentos a curto prazo, sendo incapaz de levar a batalha até o seu fim.
 
+Existem também alguns limitadores. O tempo destinado para a pesquisa estava dentro de um semestre letivo, que foi só parcialmente utilizado para o desenvolvimento desta pesquisa. Como estamos lidando com agentes de aprendizado por reforço, esse tempo fica ainda mais restrito, que para todo agente a ser treinado, para cada configuração diferente de hiperparâmetros, há um tempo razoável de espera para a coleta de resultados. Também houveram situações inesperadas, como a atualização de uma biblioteca tornar um código, ainda que comentado, inutilizável, ocasionando na tentativa prolongada de uma refatoração e consequente decisão de descarte de boa parte do trabalho que poderia, na situação ideal, ser reusado.
+
+Para desenvolvimento futuro, surgem diversas oportunidades. O ambiente simplificado ainda tem um longo caminho para se assemelhar ao jogo original, que possui um estado observável muito maior a ser levado em consideração. Limitação de uso de um mesmo movimento, adição de mais quatro pokemons na equipe de cada jogador, movimentos que causam efeitos negativos, atributos, itens, entre outros, entram todos nessa categoria. Há a possibilidade do uso de ferramentas de explicabilidade, ganhando entendimento de quais \textit{features} do estado da batalha são as mais relevantes para a tomada de decisão de cada agente. Foram utilizados somente quatro algoritmos para treinar os agentes, existem muitos mais que podem ser testados no ambiente para gerar mais dados de conflitos. Isso e muito mais pode ser feito como trabalho futuro, agregando na evolução da pesquisa.
 
 
 
