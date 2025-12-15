@@ -1,0 +1,278 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{PRIMEarxiv}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage[round,authoryear]{natbib}
+\graphicspath{{img/}}     % organize your images and other figures under media/ folder
+
+
+%% Title
+\title{Simulador de Batalhas Pokemon}
+
+\author{
+  Eduardo Dalmás Faé, João Pedro Kuhn Braun \\
+  Instituto de Informática \\
+  Universidade Federal do Rio Grande do Sul \\
+  Porto Alegre\\
+  \texttt{\{edfae, jpkbraun\}@inf.ufrgs.br} \\
+}
+
+
+\begin{document}
+\maketitle
+
+
+\begin{abstract}
+Esta pesquisa aborda uma simulação simplificada de batalhas pokemons, o treinamento de agentes por aprendizado por reforço nesse ambiente utilizando os seguintes algoritmos: A2C, DQN, PPO e RPPO, sendo esses testados em combates entre si para medição do desempenho alcançado. Os algoritmos foram treinados utilizando uma função de recompensa simples, e uma mais elaborada, integrando recompensas a curto prazo. Eles foram divididos em grupos e colocados para disputar combates entre si, e foi observado, com exceção do A2C, que a função de recompensa mais elaborada capturou melhor as nuâncias de uma batalha, acelerando a convergência desses agentes. A simulação atual ainda traz muitas simplificações, possibilitando futuras melhorias em muitos aspectos nesta pesquisa.
+\end{abstract}
+
+% keywords can be removed
+\keywords{Aprendizado por Reforço \and Batalha Pokemon \and Simulação Simplificada}
+
+
+\section{Introduction}
+
+Máquinas podem pensar \cite{machinesthink}? Alan Turing se fez essa pergunta em 1950, e desde então muitos cientistas se propuseram a pesquisar e dedicar as suas vidas para esse tema e suas variações. Em 1959, cunhou-se o termo \textit{machine learning} (aprendizado de máquina) devido à pesquisa de \citet{machinelearning}, na qual um agente foi treinado para jogar damas, um dos primeiros passos da época na direção de computadores se tornarem capazes de resolver/jogar jogos desenvolvidos por humanos.
+
+Desde então, muita pesquisa foi realizada na área de aprendizado de máquina e aprendizado por reforço. Entre muitos marcos nesses campos de conhecimento, podemos citar Deep Blue \cite{deepblue}, IA que foi capaz de vencer o campeão de xadrez mundial da época, Garry Kasparov. Mais tarde, AlphaGo \cite{alphago} e AlphaZero \cite{alphazero} vieram para derrotar o campeão mundial de Go, Lee Sedol, e propor uma técnica para treinar um agente para jogar com desempenho superhumano diversos jogos de tabuleiro, sem necessidade de aprendizado supervisionado ou anotações de especialistas para aprender boas jogadas, respectivamente.
+
+Indo além de jogos que podem ser representados por um domínio discreto, também houveram grandes contribuições, como DQN para jogar Atari \cite{atarinew}, AlphaStar \cite{alphastar} e OpenAI-5 \cite{openai5}. DQN (\textit{Deep-Q Network}) é muito semelhante a \textit{Q-learning} tabular, porém no lugar da tabela de transições para cada par de ação e estado, uma rede neural se torna a responsável por aprender essa representação e, a partir de um estado, decidir a ação que deve ser tomada. Ela foi utilizada pela primeira vez para jogar diversos jogos do Atari, em 2013, resultando em uma publicação mais elaborada em 2015. AlphaStar e OpenAI-5 também tratam de jogos representados por um domínio contínuo, sendo o primeiro responsável por alcançar domínio altamente competitivo em StarCraft II e o segundo por vencer dos campões mundiais do mundial de Dota 2 no ano de 2019.
+
+Sabemos que as aplicações de aprendizado por reforço estão distantes de estarem restritas a jogos. É importantíssimo salientar que muito dessa pesquisa exposta demonstra uma prova de conceito, até onde vai o nosso alcance, o tamanho de nosso horizonte. Após descobrirmos o que é possível no universo de jogos e simulações, abstraímos esse conhecimento e o aplicamos em diversas áreas como a robótica, a qual se beneficia muito de treinos de agentes em simulações para futura aplicação no mundo real, o treinamento de grandes modelos de linguagem \cite{hfrl}, em que através do \textit{feedback} humano é possível melhorar a qualidade das respostas desses modelos através de apredizado por reforço, entre muitas outras.
+
+Dessa forma, enxergamos a simulação de batalhas entre pokemons como uma oportunidade de provar um conceito. Esse jogo tem características únicas que o fazem ser um tópico interessante de ser pesquisado. O combate em turnos não é trivial, pois a ação dos dois jogadores ocorre simultaneamente, o jogo tem muitas características a serem levadas em conta, então tem um grande espaço de estados, e está sempre em constante desenvolvimento, tornando-se desafiador de sua modelagem estar atualizada. Não somente a comunidade científica se beneficia da exploração desse domínio, como também a sua grande comunidade, que tem interesse nesses assuntos.
+
+
+
+\section{Conceitos Básicos}
+
+Pokemon é uma franquia da Nintendo que começou como um jogo no ano de 1996, que com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de uma história até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas centrais que traz vida ao jogo são as batalhas entre pokemons.
+
+Pokemons são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses pokemons os capturam e usam para batalhar entre si, dinâmica essa importantíssima e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem tipos, quatro movimentos, cada um possuindo tipos e poderes, atributos que ditam a sua "qualidade", etc. A batalha ocorre em turnos em que, simultaneamente, cada treinador pokemon decide se deseja trocar o pokemon atual para outro de sua equipe, se possível, ou atacar com um de seus 4 movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos pokemons atacarem, executa sua ação primeiro o mais veloz.
+
+Seus tipos são importantes de serem levados em consideração também no contexto da batalha. Existem 18 tipos no mundo pokemon, cada um deles possuindo características positivas ou negativas em relação aos outros, como duplicar, cortar pela metade ou anular o dano causado pelo ataque de um oponente. Além disso, quando um pokemon ataca utilizando um movimento categorizado com seu próprio tipo, o poder deste golpe é multiplicado por um fator de 50\%, dinâmica relevante para o combate.
+
+
+
+\section{Trabalhos Relacionados}
+
+\textbf{Batalha Pokemon} Trabalhos anteriores já modelaram ambientes de batalha pokemon para treino e teste de agentes. \citet{poke-battle} definiram um ambiente simplificado de pokemon para iniciar seus experimentos, reduzindo enormemente a complexidade do jogo para tal. Para o treino de seus agentes, foram utilizados dois algoritmos, WPL (\textit{Weighted Policy Learner}) \cite{wpl} e GIGAWoLF (\textit{Generalized Infinitesimal Gradient Ascent Win or Learn Fast}) \cite{gigawolf} em cima de uma configuração de times pokemons semi-aleatória, para então serem testados em um ambiente determinístico criado pelos próprios autores, para descobrir se os agentes aprenderam a executar uma ação ruim a curto prazo, trocar de pokemon, para uma possível vitória num horizonte mais distante. O presente trabalho utilizou de um ambiente mais complexo, além de definir mais agentes, com diferentes algoritmos para seus treinamentos.
+
+\textbf{Padronização de Batalhas} Houveram tentativas de padronizar o cenário geral de batalha e modelação de um ambiente pokemon, além de permitir a integração de agentes treinados com simuladores de batalhas pokemon grandemente utilizados hoje em dia, como \href{https://pokemonshowdown.com/}{Pokemon Showdown}. Entretanto, trabalhos como os de \cite{poke-env} falham hoje em executar esse proposta com êxito, visto alguns problemas de uso e falta de documentação adequada. Esta pesquisa não integra o agente treinado com simuladores para interação e teste com outros jogadores, porém traz uma padronização não só de um ambiente de batalha pokemon através do uso do \href{https://pettingzoo.farama.org/}{PettingZoo} \cite{pettingzoo}, mas também traz padronização no treino e uso de agentes nesse ambiente.
+
+\textbf{Montagem de Equipe} Uma etapa anterior ao combate em batalhas é a montagem de uma equipe adequada de pokemons. \citet{vgc-ai} acompanham o \textit{meta game} atual do simulador de batalha, Pokemon Showdown, para restringir as possibilidades de diferentes opções para criar equipes, focando em estratégias voltadas para o jogo competitivo quando nessa criação. Este trabalho, no intuito de generalizar para o agente poder batalhar em toda e qualquer situação em que ele se encontrar, foca em um \textit{meta game} parcial ao gerar os times dos agentes, mas ainda mantém uma aleatoriedade forte, propiciando generalização para os mais diferentes cenários.
+
+
+\section{Metodologia}
+
+Inicialmente, nosso foco foi desfazer gradualmente as simplificações no ambiente de batalha pokemon realizadas por \citet{poke-battle}, usando seu trabalho de base para o início da pesquisa. Reintroduzimos tipos duplos para os pokemons, que agora quando gerados podem representar toda a tipagem encontrada nesse universo, e criamos uma nova configuração para o ambiente de batalha pokemon, chamando-a de \textit{meta aware}. Tal configuração reflete uma das possíveis estratégias usadas por jogadores de alto nível em batalhas pokemon, que consiste em escolher movimentos da (s) tipagem (ns) dele próprio e, para os faltantes, selecionar o que chamamos de movimentos de cobertura, como segue na Figura \ref{fig:movimento-cobertura.png}. Para um pokemon do tipo X com fraqueza Y, pode ser selecionado então um golpe caracterizado como Z, o qual Y é fraco contra, seguindo uma linha de raciocínio semelhante a "O inimigo de meu inimigo é meu amigo" (um golpe poderoso contra um inimigo poderoso contra mim deve ser importante).
+
+\begin{figure}
+    \centering
+    \caption{Exemplo da estratégia de movimentos de cobertura. Na imagem, é evidente que um pokemon do tipo fogo é frágil contra água, então, a estratégia de nossa configuração \textit{meta aware} traz, como um possível movimento de cobertura, o tipo fogo ter um ataque elétrico, que é forte contra água, para poder se defender de adversários fortes contra ele.}
+    \includegraphics[width=0.45\textwidth]{img/movimento-cobertura.png}
+    \label{fig:movimento-cobertura.png}
+\end{figure}
+
+O código é original de 2020, utilizando-se da versão 1.x do \href{www.tensorflow.org/}{TensorFlow} para realizar o treinamento de seus agentes, com os algoritmos WPL \citet{wpl} e GIGAWoLF \citet{gigawolf}. Após múltiplas tentativas de adaptação do código para alguma versão 2.x do TensorFlow ou de execução em retrocompatibilidade de alguma versão mais recente com o código antigo, optamos por utilizar a biblioteca de Python PettingZoo \citet{pettingzoo}, visto que possui muita padronização para treinamento multiagente.
+
+Treinamos quatro agentes com algoritmos diferentes da biblioteca \href{stable-baselines3.readthedocs.io}{Stable-Baselines3} \citet{sb3}, sendo estes PPO (\textit{Proximal Policy Optimization}) \citet{ppo}, DQN (\textit{Deep-Q Networks}) \citet{dqn}, RPPO (\textit{Recurrent} PPO), uma versão do PPO que utiliza de LSTMs (\textit{Long Short-Term Memory}) \citet{lstm} para implementar recorrência, e A2C, uma versão de algoritmo \textit{actor-critic} da implementação de \citet{a3c} que, na implementação dentro do Stable-Baselines3, não é assíncrono que nem a versão A3C. A escolha desses algoritmos para o treino dos agentes foi devido ao conhecimento de alguns, vistos em sala de aula a respeito de seu funcionamento, e também ao seu bom desempenho evidenciado na literatura, tendo cada um treinado por 1000000 de interações com o ambiente.
+
+Além disso, no ambiente simplificado de pokemon original foi feita uma engenharia de recompensa, mudando a dinâmica óbvia de uma recompensa de +1 quando o agente obtém uma vitória e -1 quando derrotado para uma equação que leva em consideração alguns retornos imediatos, sendo estes o dano causado e recebido por seus pokemons e um retorno positivo quando um pokemon adversário é derrotado. Segue, na Equação \eqref{eq:old-reward}, a descrição matemática do cálculo da recompensa. Observa-se que o retorno para o agente tende a ser mais positivo do que negativo, o que pode ocasionar recompensas positivas mesmo em cenários de derrota, como no caso de um agente X derrotar 1 pokemon do adversário e deixar o segundo com metade de seus pontos de vida, perdendo a partida e recebendo, assim, +0,5 pontos de recompensa.
+
+\begin{equation}
+    r_t
+    = \sum_{i=1}^{2} \left( \Delta h^{\text{enemy}}_{i,t} + \Delta k^{\text{enemy}}_{i,t} \right)
+      - \sum_{j=1}^{2} \Delta h^{\text{ally}}_{j,t},
+    \qquad -2 \le r_t \le 4
+    \label{eq:old-reward}
+\end{equation}
+
+Também houve a necessidade de adicionar um fechamento novo no combate pokemon: o empate. Numa batalha tradicional do jogo não simplificado, não há o empate, pois em algum momento ela vai ter um fim e algum jogador terá a vitória. No entanto, foi observado durante o treinamento e teste dos agentes que, durante o combate, duas situações inconvenientes podem ocorrer: ambos os jogadores decidem que a melhor ação é trocar o seu pokemon para sempre e, como esse movimento válido não causa dano, a batalha não se encerra, ou ambos não obtiveram conhecimento o suficiente para generalizar para todos os cenários, não aprendendo que alguns movimentos são completamente anulados contra alguns tipos, fazendo com que ninguém cause dano, tornando o jogo infinito. Devido a essas exceções, foi necessária a implementação do empate, que ocorre quando ambos os agentes, num combate, executarem consecutivamente quatro ações que não causem dano nenhum em seu oponente, sendo esta mecânica somente implementada para os agentes treinados com a fórmula tradicional da recompensa, ocasionando menos um de retorno para ambos os agentes.
+
+Visto essa situação, optamos por treinar os quatro agentes na configuração do ambiente de batalha como \textit{meta aware}, com a função de recompensa original e a função de recompensa simplificada, um ponto para a vitória, menos um para a derrota do agente. Assim, foram treinados oito agentes, que para a avaliação de seus desempenhos foram colocados para batalhar entre si, exceto contra si mesmo, em grupos de quatro divididos pela função de recompensa que foi utilizada para treiná-los. Após isso, cada algoritmo lutou contra sua versão de recompensa alternativa, na tentativa de medir se o agente com a recompensa simples ou a original teria um melhor desempenho. Para cada teste, foram utilizadas duas configurações de ambiente, a nossa, \textit{meta aware}, e uma configuração determinística, em que o jogador um começa com uma grande vantagem contra seu oponente, e se corretamente aproveitada deve garantir uma taxa de vitória de 100\%. Para todos os jogos, os agentes ocuparam a posição de jogador 1 e também de jogador 2, resultando então em 64 jogos no total.
+
+
+
+\section{Resultados e Discussão}
+
+Houveram no total 64 jogos, dos quais 16 foram as versões com recompensa padrão \textit{versus} recompensa mais elaborada, e 24 de competição interna para cada recompensa, resultando em 48 jogos. Em todas as tabelas, há o sufixo "-old", indicando que foi utilizada a função de recompensa encontrada pelos autores de Pokemon Battle Simulator \cite{poke-battle}, enquanto "-new" indica a função de recompensa padrão, de mais um para vitória e menos um para derrotas ou empates. Para cada jogo citado, foram realizados 10000 batalhas de teste.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente determinístico.}
+    \label{tab:old_full_deterministic}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-old & DQN-old & 7560 & \textbf{0} & 2440 \\
+        A2C-old & PPO-old & 7509 & \textbf{0} & 2491 \\
+        A2C-old & RPPO-old & 7549 & \textbf{0} & 2451 \\
+        DQN-old & A2C-old & \textbf{10000} & \textbf{0} & 0 \\
+        DQN-old & PPO-old & \textbf{10000} & \textbf{0} & 0 \\
+        DQN-old & RPPO-old & \textbf{10000} & \textbf{0} & 0 \\
+        PPO-old & A2C-old & \textbf{10000} & \textbf{0} & 0 \\
+        PPO-old & DQN-old & \textbf{10000} & \textbf{0} & 0 \\
+        PPO-old & RPPO-old & \textbf{10000} & \textbf{0} & 0 \\
+        RPPO-old & A2C-old & 7574 & \textbf{0} & 2426 \\
+        RPPO-old & DQN-old & 7548 & \textbf{0} & 2452 \\
+        RPPO-old & PPO-old & 7455 & \textbf{0} & \textbf{2545} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Podemos observar que, na Tabela \ref{tab:old_full_deterministic} os agentes DQN e PPO foram capazes de generalizar, mesmo partindo de um treinamento em uma configuração diferente (pois todos agentes foram treinados somente na configuração \textit{meta aware}), para todos os jogos determinísticos. A vantagem entregue ao jogador um garante a sua vitória caso jogue adequadamente. Sendo assim, dois agentes falharam na generalização para esse cenário, sendo estes A2C e RPPO. Apesar disso, é interessante que não houve nenhum empate, todos os caminhos levaram aos encerramentos das partidas.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente \textit{meta aware}.}
+    \label{tab:old_meta_game_aware}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-old & DQN-old & 5231 & 99 & 4670 \\
+        A2C-old & PPO-old & 4986 & 116 & 4898 \\
+        A2C-old & RPPO-old & 4766 & 143 & 5091 \\
+        DQN-old & A2C-old & 4626 & 99 & 5275 \\
+        DQN-old & PPO-old & 4660 & 110 & 5230 \\
+        DQN-old & RPPO-old & 4293 & \textbf{145} & \textbf{5562} \\
+        PPO-old & A2C-old & 4860 & 98 & 5042 \\
+        PPO-old & DQN-old & 5272 & 121 & 4607 \\
+        PPO-old & RPPO-old & 4774 & 119 & 5107 \\
+        RPPO-old & A2C-old & 5187 & 123 & 4690 \\
+        RPPO-old & DQN-old & \textbf{5526} & 116 & 4358 \\
+        RPPO-old & PPO-old & 5171 & 91 & 4738 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Na configuração em que os agentes treinaram, como observamos na Tabela \ref{tab:old_meta_game_aware}, os resultados foram diferentes comparativamente com a configuração determinística. RPPO e A2C ocuparam a primeira e segunda posição, respectivamente, em relação a sua taxa de vitórias. Apesar de terem falhado em generalizar para casos de vitória garantida, no ambiente em que foram todos treinados igualmente, esses dois se desempenharam melhor. É possível que RPPO, devido ao uso de LSTM em seu funcionamento, tenha se adaptado melhor para casos adversos ao invés de garantidamente vantajosos, assim como o algoritmo de \textit{actor-critic} não pudesse avaliar tão bem um estado de muita vantagem, mas pôde obter maior êxito em combates "semelhantes" aos vistos durante o treinamento.
+
+Ressalta-se também que, o maior vencedor, RPPO, obteve o maior número de empates, que mesmo sem a informação se foi um empate "bom" (a melhor ação realmente seria trocar de pokemon, o oponente acompanhou e houve empate após muitas trocas) ou "ruim" (o agente foi incapaz de causar dano repetidamente pois não aprendeu ainda a generalizar), devido a ele ter maior estatística em ambos os casos, parecem ter sido "bons" empates.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente determinístico.}
+    \label{tab:versus_full_deterministic}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-new & A2C-old & 7504 & \textbf{0} & 2496 \\
+        A2C-old & A2C-new & \textbf{10000} & \textbf{0} & 0 \\
+        DQN-new & DQN-old & 0 & \textbf{0} & \textbf{10000} \\
+        DQN-old & DQN-new & \textbf{10000} & \textbf{0} & 0 \\
+        PPO-new & PPO-old & \textbf{10000} & \textbf{0} & 0 \\
+        PPO-old & PPO-new & 7437 & \textbf{0} & 2563 \\
+        RPPO-new & RPPO-old & \textbf{10000} & \textbf{0} & 0 \\
+        RPPO-old & RPPO-new & \textbf{10000} & \textbf{0} & 0 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Com exceção do PPO, todos os agentes que treinaram com a recompensa antiga obtiveram desempenho melhor ou tão bom quanto os agentes novos, para cada algoritmo, como enxergamos na Tabela \ref{tab:versus_full_deterministic}. No âmbito geral, talvez a recompensa simplificada tenha sido incapaz de, num mesmo número de passos treinados, fazer com que os agentes se aproveitassem do cenário vantajoso. Ainda assim, segue inconclusivo, visto que o cenário de vantagem força um tipo específico, então outros cenários de vantagem poderiam ter resultados diferentes.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente \textit{meta aware}.}
+    \label{tab:versus_meta_game_aware}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-new & A2C-old & 6796 & 863 & 2341 \\
+        A2C-old & A2C-new & 2387 & 841 & 6772 \\
+        DQN-new & DQN-old & 0 & \textbf{880} & \textbf{9120} \\
+        DQN-old & DQN-new & \textbf{9184} & 815 & 1 \\
+        PPO-new & PPO-old & 4182 & 233 & 5585 \\
+        PPO-old & PPO-new & 5494 & 236 & 4270 \\
+        RPPO-new & RPPO-old & 4738 & 364 & 4898 \\
+        RPPO-old & RPPO-new & 4781 & 366 & 4853 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Observando a Tabela \ref{tab:versus_meta_game_aware}, vemos que o agente A2C com recompensa simples teve um desempenho melhor que o antigo. No entanto, para todos os outros, a versão da função de recompensa encontrada por engenharia de recompensa parece ter tido desempenho melhor ou semelhante, sendo este último o caso do RPPO, inconclusivo. Forçando uma generalização, a engenharia de recompensa funcionou e na maioria dos casos, treinar com esse \textit{feedback} mais elaborado, enxergando um pouco a curto prazo, fez sentido e tornou os agentes mais aptos a batalharem. No entanto, não é verdade que existe uma função de recompensa absoluta, que para todo algoritmo treinado utilizando-a ele terá um desempenho melhor, visto o comportamento do ator-crítico. A própria função de recompensa pode ser um hiperparâmetro que pode ser elaborado para cada agente individualmente.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente determinístico.}
+    \label{tab:new_full_deterministic}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-new & DQN-new & 0 & \textbf{10000} & 0 \\
+        A2C-new & PPO-new & \textbf{10000} & 0 & 0 \\
+        A2C-new & RPPO-new & \textbf{10000} & 0 & 0 \\
+        DQN-new & A2C-new & 0 & \textbf{10000} & 0 \\
+        DQN-new & PPO-new & \textbf{10000} & 0 & 0 \\
+        DQN-new & RPPO-new & \textbf{10000} & 0 & 0 \\
+        PPO-new & A2C-new & 0 & \textbf{10000} & 0 \\
+        PPO-new & DQN-new & 0 & \textbf{10000} & 0 \\
+        PPO-new & RPPO-new & \textbf{10000} & 0 & 0 \\
+        RPPO-new & A2C-new & 0 & 0 & \textbf{10000} \\
+        RPPO-new & DQN-new & 0 & 0 & \textbf{10000} \\
+        RPPO-new & PPO-new & 6164 & 0 & 3836 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Até o momento, não houve um único empate nos cenários determinísticos, porém com exceção do RPPO, todos, ou como jogador um ou como jogador dois, empataram, e quando o fizeram, foi 100\% dos jogos, como evidenciado na Tabela \ref{tab:new_full_deterministic}. O desempenho geral também piorou, pois vemos que o RPPO, por exemplo, mesmo com a vitória garantida na posição de jogador um, perdeu 100\% das vezes na maioria dos casos. Para o ambiente na configuração vantajosa, nenhum agente foi capaz de garantir a sua vitória absoluta, o que pode indicar que não houve generalização para esse cenário a partir da função de recompensa simples.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente \textit{meta aware}.}
+    \label{tab:new_meta_game_aware}
+    \begin{tabular}{llrrr}
+        \hline
+        Jogador 1 & Jogador 2 & V & D & L \\
+        \hline
+        A2C-new & DQN-new & 119 & \textbf{4791} & 5090 \\
+        A2C-new & PPO-new & 5720 & 1049 & 3231 \\
+        A2C-new & RPPO-new & 6163 & 885 & 2952 \\
+        DQN-new & A2C-new & 5207 & 4667 & 126 \\
+        DQN-new & PPO-new & 7689 & 2211 & 100 \\
+        DQN-new & RPPO-new & \textbf{8203} & 1708 & 89 \\
+        PPO-new & A2C-new & 3114 & 1087 & 5799 \\
+        PPO-new & DQN-new & 120 & 2096 & 7784 \\
+        PPO-new & RPPO-new & 5029 & 387 & 4584 \\
+        RPPO-new & A2C-new & 2999 & 890 & 6111 \\
+        RPPO-new & DQN-new & 101 & 1696 & \textbf{8203} \\
+        RPPO-new & PPO-new & 4581 & 390 & 5029 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Diferente dos melhores agentes observados na Tabela \ref{tab:old_meta_game_aware}, a Tabela \ref{tab:new_meta_game_aware} demonstra resultados diferentes. DQN e A2C obtiveram a maior taxa de vitórias, respectivamente, enquanto PPO e RPPO tiveram desempenho semelhante, sendo o primeiro marginalmente melhor. Uma função de recompensa diferente resultou, para um treino de mesmo número de passos, hiperparâmetros idênticos e com os mesmos agentes avaliados, resultados qualitativos diferentes, o que pode ser evidência que a função de recompensa pode ser vista como um hiperparâmetro capaz de fazermos um \textit{fine-tuning} para cada agente.
+
+
+
+\section{Conclusão}
+
+Após todo o exposto nesta pesquisa, percebemos que uma engenharia de recompensa parece fazer-se necessária. Uma função de recompensa simples demais falha em capturar toda a nuância de uma batalha pokemon, mesmo que em um cenário simplificado comparado ao jogo original. No entanto, tal função deve ser pensada com cuidado para não dar oportunidade do agente divergir para um comportamento incorreto durante o seu treinamento, ou ficar preso em pensamentos a curto prazo, sendo incapaz de levar a batalha até o seu fim.
+
+Existem também alguns limitadores. O tempo destinado para a pesquisa estava dentro de um semestre letivo, que foi só parcialmente utilizado para o desenvolvimento desta pesquisa. Como estamos lidando com agentes de aprendizado por reforço, esse tempo fica ainda mais restrito, que para todo agente a ser treinado, para cada configuração diferente de hiperparâmetros, há um tempo razoável de espera para a coleta de resultados. Também houveram situações inesperadas, como a atualização de uma biblioteca tornar um código, ainda que comentado, inutilizável, ocasionando na tentativa prolongada de uma refatoração e consequente decisão de descarte de boa parte do trabalho que poderia, na situação ideal, ser reusado.
+
+Para desenvolvimento futuro, surgem diversas oportunidades. O ambiente simplificado ainda tem um longo caminho para se assemelhar ao jogo original, que possui um estado observável muito maior a ser levado em consideração. Limitação de uso de um mesmo movimento, adição de mais quatro pokemons na equipe de cada jogador, movimentos que causam efeitos negativos, atributos, itens, entre outros, entram todos nessa categoria. Há a possibilidade do uso de ferramentas de explicabilidade, ganhando entendimento de quais \textit{features} do estado da batalha são as mais relevantes para a tomada de decisão de cada agente. Foram utilizados somente quatro algoritmos para treinar os agentes, existem muitos mais que podem ser testados no ambiente para gerar mais dados de conflitos. Isso e muito mais pode ser feito como trabalho futuro, agregando na evolução da pesquisa.
+
+
+
+%Bibliography
+\bibliographystyle{plainnat}
+\bibliography{references}  
+
+
+\end{document}
