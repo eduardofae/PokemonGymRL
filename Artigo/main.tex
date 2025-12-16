@@ -68,29 +68,36 @@
 \maketitle
 
 \begin{abstract}
-Esta pesquisa aborda uma simulação simplificada de batalhas Pokémon, o treinamento de agentes por aprendizado por reforço nesse ambiente utilizando os seguintes algoritmos: A2C, DQN, PPO e RPPO, sendo esses testados em combates entre si para medição do desempenho alcançado. Os algoritmos foram treinados utilizando uma função de recompensa simples, e uma mais elaborada, integrando recompensas a curto prazo. Eles foram divididos em grupos e colocados para disputar combates entre si, e foi observado, com exceção do A2C, que a função de recompensa mais elaborada capturou melhor as nuâncias de uma batalha, acelerando a convergência desses agentes. A simulação atual ainda traz muitas simplificações, possibilitando futuras melhorias em muitos aspectos nesta pesquisa.
+Esta pesquisa aborda uma simulação simplificada de batalhas Pokémon e o treinamento de agentes por aprendizado por reforço para a validação deste ambiente utilizando os seguintes algoritmos: A2C, DQN, PPO e RPPO, sendo esses testados em combates entre si para medição do desempenho alcançado. Os agentes foram treinados utilizando uma função de recompensa simples e uma mais elaborada, integrando recompensas a curto prazo. Eles foram divididos em grupos e colocados para disputar combates entre si, e foi observado, com exceção do A2C, que a função de recompensa mais elaborada capturou melhor as características de uma batalha, acelerando a convergência desses agentes. Foi observado também que os agentes aprenderam as regras do ambiente simplificado de batalha, que possui diversas possíveis melhorias a serem implementadas rumo a sua versão não simplificada, resultando em futura pesquisa.
 \end{abstract}
 
 % keywords can be removed
-\keywords{Aprendizado por Reforço; Batalha Pokémon; Simulação Simplificada}
+\keywords{Aprendizado por Reforço; Batalha Pokémon; Ambiente Simplificado}
 
 
 \section{Introdução}
 
-Pokémon é uma franquia da Nintendo que começou como um jogo no ano de 1996, que com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de uma história até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas centrais que traz vida ao jogo são as batalhas entre Pokémon.
+Pokémon é uma franquia da Nintendo que começou como um jogo no ano de 1996, e com o passar dos anos evoluiu para muitas outras categorias de conteúdo, tornando-se mundialmente reconhecida. Entre muitas das dinâmicas acerca do jogo, que trata desde narrativa de histórias até explorações de cenários e segredos, pode-se afirmar que uma das mecânicas centrais que traz vida e emoção ao jogo são as batalhas entre Pokémon.
 
-Pokémon são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses Pokémon os capturam e usam para batalhar entre si, dinâmica de grande relevância e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem tipos, quatro movimentos, cada um possuindo tipos e poderes, atributos que ditam a sua "qualidade", etc. A batalha ocorre em turnos em que, simultaneamente, cada treinador Pokémon decide se deseja trocar o Pokémon atual para outro de sua equipe, se possível, ou atacar com um de seus quatro movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos Pokémon atacarem, executa sua ação primeiro o mais veloz.
+Pokémon são seres vivos nesse mundo de fantasia que se assemelham com animais, e treinadores desses Pokémon os capturam e usam para batalhar entre si, dinâmica de grande relevância e muito levada a sério nesse mundo. Esses seres vivos, no contexto da batalha, possuem um ou dois tipos, quatro movimentos, cada um possuindo um tipo e nível de poder ou efeito especial, atributos que ditam a sua "qualidade", etc. A batalha ocorre de maneira síncrona, em turnos em que os jogadores decidem suas ações simultaneamente. Cada treinador Pokémon decide se deseja trocar o Pokémon atual para outro de sua equipe, se possível, ou atacar com um de seus movimentos válidos. Caso um único treinador decida trocar, a troca ocorre primeiro, caso ambos troquem, a ordem não importa, e se ambos Pokémon atacarem, executa sua ação primeiro o mais veloz.
 
-Seus tipos são importantes de serem levados em consideração também no contexto da batalha. Existem 18 tipos no mundo Pokémon, cada um deles possuindo características positivas ou negativas em relação aos outros, como duplicar, cortar pela metade ou anular o dano causado pelo ataque de um oponente. Além disso, quando um Pokémon ataca utilizando um movimento categorizado com seu próprio tipo, o poder deste golpe é multiplicado por um fator de 50\%, dinâmica relevante para o combate.
+Seus tipos são importantes de serem levados em consideração principalmente no contexto da batalha. Existem 18 tipos no mundo Pokémon, cada um deles possuindo características positivas ou negativas em relação aos outros, como duplicar, cortar pela metade ou anular o dano causado pelo ataque de um oponente. Além disso, quando um Pokémon ataca utilizando um movimento categorizado com seu próprio tipo, o poder deste golpe é multiplicado por um fator de 50\%.
 
-Dessa forma, esta pesquisa enxerga a simulação de batalhas entre Pokémon surgir como uma oportunidade de provar um conceito. Esse jogo tem características únicas, constituindo um tópico relevante de pesquisa. O combate em turnos não é trivial, pois a ação dos dois jogadores ocorre simultaneamente, o jogo tem muitas características a serem levadas em conta, então tem um grande espaço de estados, e está sempre em constante desenvolvimento, tornando-se desafiador de sua modelagem estar atualizada. Não somente a comunidade científica se beneficia da exploração desse domínio, como também a sua grande comunidade, que tem interesse nesses assuntos.
+% Dessa forma, esta pesquisa enxerga a simulação de batalhas entre Pokémon surgir como uma oportunidade de provar
+% um conceito. Esse jogo tem características únicas, constituindo um tópico relevante de pesquisa. O combate em turnos
+% não é trivial, pois a ação dos dois jogadores ocorre simultaneamente, o jogo tem muitas características a serem levadas
+% em conta, então tem um grande espaço de estados, e está sempre em constante desenvolvimento, tornando-se desafiador
+% de sua modelagem estar atualizada. Não somente a comunidade científica se beneficia da exploração desse domínio,
+% como também a sua grande comunidade, que tem interesse nesses assuntos.
+
+Dessa forma, esta pesquisa enxerga a simulação de batalhas entre Pokémon surgir como uma oportunidade de provar um conceito. Não há, no conhecimento atual dos autores, trabalho que modele o ambiente de batalhas em sua totalidade. A ação durante uma batalha pode ser trocar o Pokémon que atualmente está em campo com um entre cinco que estão em descanso (totalizando uma equipe de seis) ou utilizar um de seus quatro movimentos em batalha contra seu oponente, resultando em um espaço de nove ações. O espaço de estados de uma batalha consiste em todas as informações dos Pokémon do próprio jogador e tudo que o oponente já revelou, como Pokémon já utilizados em campo pelo adversário, movimentos já usados, vidas atuais, efeitos especiais de habilidades ou itens, etc. Devido às características apresentadas, faz-se necessário o início dessa modelagem ser uma simplificada, evoluindo gradativamente em direção ao jogo final, que é o que esta pesquisa propõe.
 
 
 \section{Conceitos Básicos}
 
 Em 1959, cunhou-se o termo \textit{machine learning} (aprendizado de máquina) devido à pesquisa de \citet{machinelearning}, na qual um agente foi treinado para jogar damas, um dos primeiros passos da época na direção de computadores se tornarem capazes de resolver/jogar jogos desenvolvidos por humanos.
 
-Desde então, muita pesquisa foi realizada na área de aprendizado de máquina e aprendizado por reforço. Entre muitos marcos nesses campos de conhecimento, podemos citar Deep Blue \cite{deepblue}, IA que foi capaz de vencer o campeão de xadrez mundial da época, Garry Kasparov. Mais tarde, AlphaGo \cite{alphago} e AlphaZero \cite{alphazero} vieram para derrotar o campeão mundial de Go, Lee Sedol, e propor uma técnica para treinar um agente para jogar com desempenho superhumano diversos jogos de tabuleiro, sem necessidade de aprendizado supervisionado ou anotações de especialistas para aprender boas jogadas, respectivamente.
+Desde então, muita pesquisa foi realizada na área de aprendizado de máquina e aprendizado por reforço. Entre muitos marcos nesses campos de conhecimento, podemos citar Deep Blue \citep{deepblue}, IA que foi capaz de vencer o campeão de xadrez mundial da época, Garry Kasparov. Mais tarde, AlphaGo \citep{alphago} e AlphaZero \citep{alphazero} vieram para derrotar o campeão mundial de Go, Lee Sedol, e propor uma técnica para treinar um agente para jogar com desempenho superhumano diversos jogos de tabuleiro, sem necessidade de aprendizado supervisionado ou anotações de especialistas para aprender boas jogadas, respectivamente.
 
 Indo além de jogos que podem ser representados por um domínio discreto, também houve grandes contribuições, como DQN para jogar Atari \cite{atarinew}, AlphaStar \cite{alphastar} e OpenAI-5 \cite{openai5}. DQN (\textit{Deep-Q Network}) é muito semelhante a \textit{Q-learning} tabular, porém no lugar da tabela de transições para cada par de ação e estado, uma rede neural se torna a responsável por aprender essa representação e, a partir de um estado, decidir a ação que deve ser tomada. Ela foi utilizada pela primeira vez para jogar diversos jogos do Atari, em 2013, resultando em uma publicação mais elaborada em 2015. AlphaStar e OpenAI-5 também tratam de jogos representados por um domínio contínuo, sendo o primeiro responsável por alcançar domínio altamente competitivo em StarCraft II e o segundo por vencer dos campões mundiais do mundial de Dota 2 no ano de 2019.
 
@@ -111,8 +118,8 @@ Inicialmente, nosso foco foi desfazer gradualmente as simplificações no ambien
 
 \begin{figure}
     \centering
-    \caption{Exemplo da estratégia de movimentos de cobertura. Na imagem, é evidente que um Pokémon do tipo fogo é frágil contra água, então, a estratégia de nossa configuração \textit{meta aware} traz, como um possível movimento de cobertura, o tipo fogo ter um ataque elétrico, que é forte contra água, para poder se defender de adversários fortes contra ele.}
-    \includegraphics[width=0.45\textwidth]{img/movimento-cobertura.png}
+    \caption{Exemplo da estratégia de movimentos de cobertura. No grafo direcionado abaixo, uma aresta que sai de um Pokémon (P) aponta para os movimentos (M ou Mov) que ele possui, enquanto uma aresta que sai de um movimento aponta para um Pokémon frágil contra o tipo do movimento. Logo, observando, é evidente que um Pokémon do tipo fogo é frágil contra água, então, a estratégia de nossa configuração \textit{meta aware} traz, como um possível movimento de cobertura, o tipo fogo ter um ataque elétrico, que é forte contra água, para poder se defender de adversários fortes contra ele. "P" é usado como abreviação de Pokémon, "M" de movimento, e todos movimentos numerados não foram especificados.}
+    \includegraphics[width=0.7\textwidth]{img/movimento-cobertura.png}
     \label{fig:movimento-cobertura.png}
 \end{figure}
 
@@ -120,7 +127,7 @@ O código é original de 2020, utilizando-se da versão 1.x do \href{www.tensorf
 
 Treinamos quatro agentes com algoritmos diferentes da biblioteca \href{stable-baselines3.readthedocs.io}{Stable-Baselines3} \citet{sb3}, sendo estes PPO (\textit{Proximal Policy Optimization}) \citet{ppo}, DQN (\textit{Deep-Q Networks}) \citet{dqn}, RPPO (\textit{Recurrent} PPO), uma versão do PPO que utiliza de LSTMs (\textit{Long Short-Term Memory}) \citet{lstm} para implementar recorrência, e A2C, uma versão de algoritmo \textit{actor-critic} da implementação de \citet{a3c} que, na implementação dentro do Stable-Baselines3, não é assíncrono que nem a versão A3C. A escolha desses algoritmos para o treino dos agentes foi devido ao conhecimento de alguns, vistos em sala de aula a respeito de seu funcionamento, e também ao seu bom desempenho evidenciado na literatura, tendo cada um treinado por 1000000 de interações com o ambiente.
 
-Além disso, no ambiente simplificado de Pokémon original foi feita uma engenharia de recompensa, mudando a dinâmica óbvia de uma recompensa de +1 quando o agente obtém uma vitória e -1 quando derrotado para uma equação que leva em consideração alguns retornos imediatos, sendo estes o dano causado e recebido por seus Pokémon e um retorno positivo quando um Pokémon adversário é derrotado. Segue, na Equação \eqref{eq:old-reward}, a descrição matemática do cálculo da recompensa. Observa-se que o retorno para o agente tende a ser mais positivo do que negativo, o que pode ocasionar recompensas positivas mesmo em cenários de derrota, como no caso de um agente X derrotar 1 Pokémon do adversário e deixar o segundo com metade de seus pontos de vida, perdendo a partida e recebendo, assim, +0,5 pontos de recompensa.
+Além disso, no ambiente simplificado de Pokémon original de \citet{poke-battle} foi feita uma engenharia de recompensa, mudando a dinâmica óbvia de uma recompensa de +1 quando o agente obtém uma vitória e -1 quando derrotado para uma equação que leva em consideração alguns retornos imediatos, sendo estes o dano causado e recebido por seus Pokémon e um retorno positivo quando um Pokémon adversário é derrotado. Segue, na Equação \eqref{eq:old-reward}, a descrição matemática desse cálculo da recompensa. Observa-se que o retorno para o agente tende a ser mais positivo do que negativo, o que pode ocasionar recompensas positivas mesmo em cenários de derrota, como no caso de um agente X derrotar 1 Pokémon do adversário e deixar o segundo com metade de seus pontos de vida, perdendo a partida e recebendo, assim, +0,5 pontos de recompensa.
 
 \begin{equation}
     r_t
@@ -142,11 +149,11 @@ Houve, no total 64 jogos, dos quais 16 foram as versões com recompensa padrão 
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente determinístico.}
+    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente determinístico. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:old_full_deterministic}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-old & DQN-old & 7560 & \textbf{0} & 2440 \\
         A2C-old & PPO-old & 7509 & \textbf{0} & 2491 \\
@@ -168,11 +175,11 @@ Podemos observar que, na Tabela \ref{tab:old_full_deterministic} os agentes DQN 
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente \textit{meta aware}.}
+    \caption{Resultados dos jogos com a função de recompensa antiga, no ambiente \textit{meta aware}. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:old_meta_game_aware}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-old & DQN-old & 5231 & 99 & 4670 \\
         A2C-old & PPO-old & 4986 & 116 & 4898 \\
@@ -196,11 +203,11 @@ Ressalta-se também que, o maior vencedor, RPPO, obteve o maior número de empat
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente determinístico.}
+    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente determinístico. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:versus_full_deterministic}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-new & A2C-old & 7504 & \textbf{0} & 2496 \\
         A2C-old & A2C-new & \textbf{10000} & \textbf{0} & 0 \\
@@ -218,11 +225,11 @@ Com exceção do PPO, todos os agentes que treinaram com a recompensa antiga obt
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente \textit{meta aware}.}
+    \caption{Resultados dos jogos com agentes novos contra agentes antigos, no ambiente \textit{meta aware}. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:versus_meta_game_aware}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-new & A2C-old & 6796 & 863 & 2341 \\
         A2C-old & A2C-new & 2387 & 841 & 6772 \\
@@ -240,11 +247,11 @@ Observando a Tabela \ref{tab:versus_meta_game_aware}, vemos que o agente A2C com
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente determinístico.}
+    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente determinístico. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:new_full_deterministic}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-new & DQN-new & 0 & \textbf{10000} & 0 \\
         A2C-new & PPO-new & \textbf{10000} & 0 & 0 \\
@@ -266,11 +273,11 @@ Até o momento, não houve um único empate nos cenários determinísticos, por�
 
 \begin{table}[ht]
     \centering
-    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente \textit{meta aware}.}
+    \caption{Resultados dos jogos com a função de recompensa nova, no ambiente \textit{meta aware}. "V", "E" e "D" são o número de vitórias, empates e derrotas que o jogador 1 obteve, respectivamente.}
     \label{tab:new_meta_game_aware}
     \begin{tabular}{llrrr}
         \hline
-        Jogador 1 & Jogador 2 & V & D & L \\
+        Jogador 1 & Jogador 2 & V & E & D \\
         \hline
         A2C-new & DQN-new & 119 & \textbf{4791} & 5090 \\
         A2C-new & PPO-new & 5720 & 1049 & 3231 \\
